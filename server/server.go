@@ -35,7 +35,36 @@ func newUnexepectedError() []byte {
 
 // Up runs a http server.
 func Up(opt Option) {
-	http.HandleFunc("/", handler)
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		data, err := Asset("data/index.html")
+		if err != nil {
+			fmt.Printf("%v\n", err)
+			w.Write(newUnexepectedError())
+			return
+		}
+		w.Header().Set("Content-Type", "text/html")
+		w.Write(data)
+	})
+	http.HandleFunc("/index.css", func(w http.ResponseWriter, r *http.Request) {
+		data, err := Asset("data/index.css")
+		if err != nil {
+			fmt.Printf("%v\n", err)
+			w.Write(newUnexepectedError())
+			return
+		}
+		w.Header().Set("Content-Type", "text/css")
+		w.Write(data)
+	})
+	http.HandleFunc("/index.js", func(w http.ResponseWriter, r *http.Request) {
+		data, err := Asset("data/index.js")
+		if err != nil {
+			fmt.Printf("%v\n", err)
+			w.Write(newUnexepectedError())
+			return
+		}
+		w.Header().Set("Content-Type", "text/javascript")
+		w.Write(data)
+	})
 	http.HandleFunc("/api/channels", func(w http.ResponseWriter, r *http.Request) {
 		client := api.NewClient()
 		channels, err := client.GetChannels(false)

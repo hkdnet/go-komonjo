@@ -1,6 +1,6 @@
 build:
-	go build
+	go-bindata -o server/assets.go -pkg server data/ && go build
 test:
 	go test ./...
 up:
-	go build && ./go-komonjo server
+	make build && ./go-komonjo server
