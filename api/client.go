@@ -15,7 +15,7 @@ type Client struct {
 // NewClient is a constructor.
 func NewClient() *Client {
 	client := slack.New(os.Getenv("KOMONJO_SLACK_API_TOKEN"))
-	client.SetDebug(true)
+	client.SetDebug(false)
 	ret := Client{
 		client,
 	}
