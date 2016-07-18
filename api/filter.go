@@ -3,7 +3,7 @@ package api
 import (
 	"strings"
 
-	"github.com/nlopes/slack"
+	"github.com/hkdnet/slack"
 )
 
 // ChannelFilterOption is a option for FilterChannel.

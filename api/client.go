@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/nlopes/slack"
+	"github.com/hkdnet/slack"
 )
 
 // Client is a wrapper of slack.Client.

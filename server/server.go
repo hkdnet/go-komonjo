@@ -7,7 +7,7 @@ import (
 	"strconv"
 
 	"github.com/hkdnet/go-komonjo/api"
-	"github.com/nlopes/slack"
+	"github.com/hkdnet/slack"
 )
 
 func handler(w http.ResponseWriter, r *http.Request) {

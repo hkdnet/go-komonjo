@@ -1,13 +1,12 @@
 package command
 
 import (
-	"errors"
 	"fmt"
 	"strings"
 	"sync"
 
 	"github.com/hkdnet/go-komonjo/api"
-	"github.com/nlopes/slack"
+	"github.com/hkdnet/slack"
 )
 
 // ShowCommand will show the history of a channel.
@@ -29,10 +28,7 @@ func (c *ShowCommand) Run(args []string) int {
 	go func() {
 		for {
 			select {
-			case done := <-ch:
-				if !done {
-					panic(errors.New("?"))
-				}
+			case <-ch:
 				wg.Done()
 			}
 		}
@@ -41,9 +37,7 @@ func (c *ShowCommand) Run(args []string) int {
 	go func() {
 		his, err := client.GetChannelHistoryByName(args[0], newHistoryParameters())
 		if err != nil {
-			c.DealError(err)
-			ch <- false
-			return
+			panic(err)
 		}
 		history = his
 		ch <- true
@@ -52,9 +46,7 @@ func (c *ShowCommand) Run(args []string) int {
 	go func() {
 		ret, err := client.GetUserMap()
 		if err != nil {
-			c.DealError(err)
-			ch <- false
-			return
+			panic(err)
 		}
 		userMap = ret
 		ch <- true
