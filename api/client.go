@@ -35,3 +35,16 @@ func (c *Client) GetChannel(name string) (slack.Channel, error) {
 	}
 	return slack.Channel{}, fmt.Errorf("No such channel: %s", name)
 }
+
+// GetUserMap returns User.ID -> User map.
+func (c *Client) GetUserMap() (map[string]slack.User, error) {
+	ret := make(map[string]slack.User)
+	users, err := c.GetUsers()
+	if err != nil {
+		return ret, err
+	}
+	for _, u := range users {
+		ret[u.ID] = u
+	}
+	return ret, nil
+}

@@ -25,7 +25,7 @@ func (c *ShowCommand) Run(args []string) int {
 	wg := new(sync.WaitGroup)
 	ch := make(chan bool)
 	var history *slack.History
-	userMap := make(map[string]slack.User)
+	var userMap map[string]slack.User
 	go func() {
 		for {
 			select {
@@ -56,15 +56,13 @@ func (c *ShowCommand) Run(args []string) int {
 	}()
 	wg.Add(1)
 	go func() {
-		users, err := client.GetUsers()
+		ret, err := client.GetUserMap()
 		if err != nil {
 			c.DealError(err)
 			ch <- false
 			return
 		}
-		for _, u := range users {
-			userMap[u.ID] = u
-		}
+		userMap = ret
 		ch <- true
 	}()
 	wg.Wait()
