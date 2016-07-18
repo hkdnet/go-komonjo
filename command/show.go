@@ -25,6 +25,7 @@ func (c *ShowCommand) Run(args []string) int {
 	wg := new(sync.WaitGroup)
 	ch := make(chan bool)
 	var history *slack.History
+	userMap := make(map[string]slack.User)
 	go func() {
 		for {
 			select {
@@ -53,9 +54,22 @@ func (c *ShowCommand) Run(args []string) int {
 		history = his
 		ch <- true
 	}()
+	wg.Add(1)
+	go func() {
+		users, err := client.GetUsers()
+		if err != nil {
+			c.DealError(err)
+			ch <- false
+			return
+		}
+		for _, u := range users {
+			userMap[u.ID] = u
+		}
+		ch <- true
+	}()
 	wg.Wait()
 	for _, message := range history.Messages {
-		fmt.Printf("[%s] %q\n", message.User, message.Text)
+		fmt.Printf("[%s] %q\n", userMap[message.User].Name, message.Text)
 	}
 	return 0
 }
