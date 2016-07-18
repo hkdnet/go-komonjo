@@ -29,7 +29,7 @@ func (c *ShowCommand) Run(args []string) int {
 		return c.DealError(err)
 	}
 	for _, message := range history.Messages {
-		fmt.Printf("%v\n", message)
+		fmt.Printf("[%s] %s\n", message.User, message.Text)
 	}
 	return 0
 }
