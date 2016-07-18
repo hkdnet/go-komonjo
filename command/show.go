@@ -1,8 +1,10 @@
 package command
 
 import (
+	"errors"
 	"fmt"
 	"strings"
+	"sync"
 
 	"github.com/hkdnet/go-komonjo/api"
 	"github.com/nlopes/slack"
@@ -20,16 +22,40 @@ func (c *ShowCommand) Run(args []string) int {
 		return 1
 	}
 	client := api.NewClient()
-	channel, err := client.GetChannel(args[0])
-	if err != nil {
-		return c.DealError(err)
-	}
-	history, err := client.GetChannelHistory(channel.ID, newHistoryParameters())
-	if err != nil {
-		return c.DealError(err)
-	}
+	wg := new(sync.WaitGroup)
+	ch := make(chan bool)
+	var history *slack.History
+	go func() {
+		for {
+			select {
+			case done := <-ch:
+				if !done {
+					panic(errors.New("?"))
+				}
+				wg.Done()
+			}
+		}
+	}()
+	wg.Add(1)
+	go func() {
+		channel, err := client.GetChannel(args[0])
+		if err != nil {
+			c.DealError(err)
+			ch <- false
+			return
+		}
+		his, err := client.GetChannelHistory(channel.ID, newHistoryParameters())
+		if err != nil {
+			c.DealError(err)
+			ch <- false
+			return
+		}
+		history = his
+		ch <- true
+	}()
+	wg.Wait()
 	for _, message := range history.Messages {
-		fmt.Printf("[%s] %s\n", message.User, message.Text)
+		fmt.Printf("[%s] %q\n", message.User, message.Text)
 	}
 	return 0
 }
