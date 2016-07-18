@@ -39,13 +39,7 @@ func (c *ShowCommand) Run(args []string) int {
 	}()
 	wg.Add(1)
 	go func() {
-		channel, err := client.GetChannel(args[0])
-		if err != nil {
-			c.DealError(err)
-			ch <- false
-			return
-		}
-		his, err := client.GetChannelHistory(channel.ID, newHistoryParameters())
+		his, err := client.GetChannelHistoryByName(args[0], newHistoryParameters())
 		if err != nil {
 			c.DealError(err)
 			ch <- false

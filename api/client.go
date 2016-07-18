@@ -15,7 +15,7 @@ type Client struct {
 // NewClient is a constructor.
 func NewClient() *Client {
 	client := slack.New(os.Getenv("KOMONJO_SLACK_API_TOKEN"))
-	client.SetDebug(false)
+	client.SetDebug(true)
 	ret := Client{
 		client,
 	}
@@ -47,4 +47,17 @@ func (c *Client) GetUserMap() (map[string]slack.User, error) {
 		ret[u.ID] = u
 	}
 	return ret, nil
+}
+
+// GetChannelHistoryByName returns a channel history by name.
+func (c *Client) GetChannelHistoryByName(name string, param slack.HistoryParameters) (*slack.History, error) {
+	channel, err := c.GetChannel(name)
+	if err != nil {
+		return &slack.History{}, err
+	}
+	history, err := c.GetChannelHistory(channel.ID, param)
+	if err != nil {
+		return &slack.History{}, err
+	}
+	return history, nil
 }
